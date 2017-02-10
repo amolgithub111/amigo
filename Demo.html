@@ -1,0 +1,125 @@
+<script src="../LazyLoading.js"></script>
+<script src="../jQuery.1.3.9.js"></script>
+<script>
+
+	$(document).ready(function(){	
+		try{	
+			//Initialization
+			LazyLoading.ListName = "MyList";
+			LazyLoading.PageIndex = 1;
+			LazyLoading.PageSize = 10;
+			LazyLoading.ResultCounter = 0;
+			LazyLoading.SiteUrl = _spPageContextInfo.siteAbsoluteUrl;
+			LazyLoading.ViewPortHeight = $(window).height();
+	
+		    LazyLoading.Context = SP.ClientContext.get_current(); 
+		    LazyLoading.Web = LazyLoading.Context.get_web();
+		    LazyLoading.List = LazyLoading.Context.get_web().get_lists().getByTitle(LazyLoading.ListName); 
+		    LazyLoading.CamlQuery = new SP.CamlQuery(); 	    
+		    
+		    LazyLoading.CamlQuery.set_viewXml("<View>"+			    								
+					                              "<ViewFields>" + 
+					                                     "<FieldRef Name='Title'/>" + 
+					                                     "<FieldRef Name='Details'/>" + 
+					                              "</ViewFields>"+
+					                              "<RowLimit>"+LazyLoading.PageSize+"</RowLimit>"+
+				                                "</View>");
+			//Loads Initial bunch of items with specified page size
+			LazyLoading.Functions.loadItems(); 	
+			getNextPage();	
+		}
+		catch(error)
+		{
+			console.log(error);
+		}
+	});
+
+// This function returns list items w.r.t. specified page value
+function onLazyLoadSuccess() {  
+
+	LazyLoading.ListEnumerator = LazyLoading.SpItems.getEnumerator(); 
+    
+    while(LazyLoading.ListEnumerator.moveNext()) { 		
+		generateDynamicHTMLCode();		
+    }    
+	
+	if( LazyLoading.ResultCounter < LazyLoading.PageSize)
+	{
+		$("#loadingImg").hide();
+	} 
+    LazyLoading.Functions.managePagerControl(); 
+} 
+
+function onLazyLoadFail(error) { 
+	Innovations.Functions.Common.logError("Innovations",window.location.href,"onFail()","High",JSON.stringify(error),"","Err Callback","","","",false);
+}
+ 
+function generateDynamicHTMLCode()
+{
+		var htmlCode = "";
+        LazyLoading.Item = LazyLoading.ListEnumerator.get_current(); 
+		LazyLoading.ResultCounter++;
+
+		//ID
+		var itemId = LazyLoading.Item.get_item('ID');
+		
+		//Title		
+		var titleValue = LazyLoading.Item.get_item('Title');
+
+		//Details				
+		var detailsValue = LazyLoading.Item.get_item('Details');		
+		
+		
+		//Generate HTML	    
+		htmlCode = htmlCode + "<div>";
+		htmlCode = htmlCode +"<p>"+titleValue+"</p>";	
+		htmlCode = htmlCode +"<p>"+detailsValue+"</p>";		
+		htmlCode = htmlCode + "</div>";
+	    $('#ItemsGrid').append(htmlCode); 
+}
+
+// Call this function on scroll event of specific HTML element. It can be any html element having Scrollbar
+$("#s4-workspace").scroll(function() {	
+	getNextPage();	
+});
+
+function getNextPage()
+{
+	if($("#loadingImg").offset().top < LazyLoading.ViewPortHeight)
+	{
+        LazyLoading.PageIndex = LazyLoading.PageIndex + 1; 
+        if (LazyLoading.NextPagingInfo) { 
+            LazyLoading.Position = new SP.ListItemCollectionPosition(); 
+            LazyLoading.Position.set_pagingInfo(LazyLoading.NextPagingInfo); 
+        } 
+        else { 
+            LazyLoading.Position = null; 
+        }  
+        if(LazyLoading.Position != null)
+        {
+	        LazyLoading.Functions.loadItems(); 
+	    }
+	    else
+	    {
+	    	$("#loadingImg").hide();
+	    }
+	}
+}
+
+
+</script>
+
+<div> 
+<h2>Lazy Loading - SharePoint 2013</h2>
+<hr>
+</div>
+<div id="ItemsGrid"> 
+        <div id='loadingImg'>
+			<div style="text-align: center;">
+				<div class="media-body">
+					 	<img height="100px" width="130px" src="../Loading.gif"/>
+				</div>
+	        	<h4>Loading...</h4>
+	        </div>	
+		</div>      
+ </div>
