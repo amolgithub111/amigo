@@ -1,13 +1,14 @@
+<!-- Specify valid path of JS file from SharePoint library -->
 <script src="../LazyLoading.js"></script>
 <script src="../jQuery.1.3.9.js"></script>
 <script>
-
+	/*Start initialization on Ready() function */
 	$(document).ready(function(){	
 		try{	
 			//Initialization
 			LazyLoading.ListName = "MyList";
 			LazyLoading.PageIndex = 1;
-			LazyLoading.PageSize = 10;
+			LazyLoading.PageSize = 30;
 			LazyLoading.ResultCounter = 0;
 			LazyLoading.SiteUrl = _spPageContextInfo.siteAbsoluteUrl;
 			LazyLoading.ViewPortHeight = $(window).height();
@@ -25,8 +26,7 @@
 					                              "<RowLimit>"+LazyLoading.PageSize+"</RowLimit>"+
 				                                "</View>");
 			//Loads Initial bunch of items with specified page size
-			LazyLoading.Functions.loadItems(); 	
-			getNextPage();	
+			LazyLoading.Functions.loadItems(); 					
 		}
 		catch(error)
 		{
@@ -35,7 +35,7 @@
 	});
 
 // This function returns list items w.r.t. specified page value
-function onLazyLoadSuccess() {  
+function onLazyLoadSuccess() { 
 
 	LazyLoading.ListEnumerator = LazyLoading.SpItems.getEnumerator(); 
     
@@ -49,11 +49,12 @@ function onLazyLoadSuccess() {
 	} 
     LazyLoading.Functions.managePagerControl(); 
 } 
-
+//Error callback
 function onLazyLoadFail(error) { 
-	Innovations.Functions.Common.logError("Innovations",window.location.href,"onFail()","High",JSON.stringify(error),"","Err Callback","","","",false);
+	console.log(error);
 }
- 
+
+//Generates dynamic HTML for each List Item
 function generateDynamicHTMLCode()
 {
 		var htmlCode = "";
@@ -61,14 +62,11 @@ function generateDynamicHTMLCode()
 		LazyLoading.ResultCounter++;
 
 		//ID
-		var itemId = LazyLoading.Item.get_item('ID');
-		
+		var itemId = LazyLoading.Item.get_item('ID');		
 		//Title		
 		var titleValue = LazyLoading.Item.get_item('Title');
-
 		//Details				
-		var detailsValue = LazyLoading.Item.get_item('Details');		
-		
+		var detailsValue = LazyLoading.Item.get_item('Details');			
 		
 		//Generate HTML	    
 		htmlCode = htmlCode + "<div>";
@@ -83,6 +81,7 @@ $("#s4-workspace").scroll(function() {
 	getNextPage();	
 });
 
+//Gets 
 function getNextPage()
 {
 	if($("#loadingImg").offset().top < LazyLoading.ViewPortHeight)
