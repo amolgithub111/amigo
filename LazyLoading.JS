@@ -21,8 +21,7 @@ var LazyLoading = LazyLoading || {};
 	LazyLoading.ResultCounter = LazyLoading.ResultCounter || {};
 	LazyLoading.Functions = LazyLoading.Functions || {};
 	
-	//Functions
-	
+	//Functions	
 	//#1- Retrieves list items for current page.
 	LazyLoading.Functions.loadItems = function() { 	   
 		 //Set the next list items collection position - First time the position will be null 
