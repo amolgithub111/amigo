@@ -1,2 +1,2 @@
 # amigo
-SharePoint REST and JSOM repository
+SharePoint2013 REST and JSOM repository
